@@ -3,6 +3,7 @@
 /**
  *
  * 2021-06-06 -> Class created.
+ * 2022-09-25 -> Fixed empty space regex and renamed Class
  * 
  * To do: Do a .css and .js files cache using the current document sourcecode, and try to get their content and compress.
  */
@@ -13,7 +14,7 @@ class Cache
         private static $cacheLife = (60 * 60); // 1 hour
         private static $HTML = null;
         private static $path = null;
-        private static $compressRegex = "/|\r|\n|[ ]{2,}/";
+        private static $compressRegex = "/|\r|\n|[\s]{2,}/";
 
         /** This method must be called at the start of the file. It will prepare everything for the caching */
         public static function init()
@@ -53,7 +54,7 @@ class Cache
         /** Will remove all empty white spaces in excess and line breaks */
         private static function compress()
         {
-                self::$HTML = preg_replace(self::$compressRegex, "", self::$HTML);
+                self::$HTML = preg_replace(self::$compressRegex, "\s", self::$HTML);
         }
 
         /** Clear the cache for the given path */

@@ -1,5 +1,5 @@
 <?php
-include("cache.class.php");
+include("CacheClass.php");
 
 Cache::init();
 
