@@ -1,17 +1,17 @@
 # php-cache-class
 
-This class is responsible to do simple caching on websites.
+This class is responsible to do simple caching on websites. It gets all HTML output and store it in an .html file on the provided folder.
 
 ---
 
-### init
+### Cache::init()
 
-This method must be called at the start of the file. It will prepare everything for the caching
+This method must be called at the start of the file. It will prepare everything for caching
 
-### end
+### Cache::end()
 
-This method shaw be called at the end of the file. It is responsible to get the result of page rendering for the caching
+This method shall be called at the end of the file. It is responsible to get the result of page rendering for the caching
 
-### clear
+### Cache::clear($path) $path = string
 
 Clear the cache for the given path

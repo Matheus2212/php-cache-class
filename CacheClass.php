@@ -16,7 +16,10 @@ class Cache
         private static $path = null;
         private static $compressRegex = "/|\r|\n|[\s]{2,}/";
 
-        /** This method must be called at the start of the file. It will prepare everything for the caching */
+        /**
+         * @return null
+         * This method must be called at the start of the file. It will prepare everything for the caching
+         */
         public static function init()
         {
                 if ($_POST) {
@@ -28,7 +31,10 @@ class Cache
                 self::checkDir();
         }
 
-        /** This method shaw be called at the end of the file. It is responsible to get the result of page rendering for the caching */
+        /**
+         * @return null
+         * This method shaw be called at the end of the file. It is responsible to get the result of page rendering for the caching
+         */
         public static function end()
         {
                 if ($_POST) {
@@ -45,19 +51,28 @@ class Cache
                 file_put_contents($path, "<!-- cached at: " . time() . " -->" . self::$HTML . "<!-- cached at: " . time() . " -->");
         }
 
-        /** Will set where to cache */
+        /**
+         * @return null
+         * Will set where to do cache, stripping GET params
+         */
         private static function setPath()
         {
                 self::$path = explode("?", self::$cacheDir . $_SERVER['REQUEST_URI'])[0];
         }
 
-        /** Will remove all empty white spaces in excess and line breaks */
+        /**
+         * @return null
+         * Will remove all empty white spaces in excess and line breaks
+         */
         private static function compress()
         {
-                self::$HTML = preg_replace(self::$compressRegex, "\s", self::$HTML);
+                self::$HTML = preg_replace(self::$compressRegex, "", self::$HTML);
         }
 
-        /** Clear the cache for the given path */
+        /**
+         * @param (string) $path 
+         * Clear the cache on given $path
+         */
         public static function clear($path = false)
         {
                 if (!$path) {
@@ -70,6 +85,10 @@ class Cache
                 }
         }
 
+        /**
+         * @param (string) $dirPath
+         * IMPORTANT. Deletes the given directory
+         */
         public static function deleteDir($dirPath)
         {
                 if (!is_dir($dirPath)) {
@@ -89,8 +108,10 @@ class Cache
                 rmdir($dirPath);
         }
 
-
-        /** Check if dir structure exists */
+        /**
+         * @return null
+         * Check if directory exists to generate cache
+         */
         private static function checkDir()
         {
                 $path = self::$path;
@@ -105,7 +126,10 @@ class Cache
                 }
         }
 
-        /** Check if current cache has a valid lifetime */
+        /**
+         * @return null
+         * Checks if current cache has a valid lifetime
+         */
         private static function checkCache()
         {
                 $filename = "index";
