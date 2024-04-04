@@ -11,7 +11,7 @@
 class Cache
 {
         private static $cacheDir = "cache";
-        private static $cacheLife = (60 * 60); // 1 hour
+        private static $cacheLife = 60 * 60; // 1 hour
         private static $HTML = null;
         private static $path = null;
         private static $compressRegex = "/|\r|\n|[\s]{2,}/";
@@ -42,9 +42,11 @@ class Cache
                 }
                 self::$HTML = ob_get_contents();
                 self::compress();
-                $filename = "index";
+                $aux = explode("?", $_SERVER['REQUEST_URI'])[0];
+                $aux = implode("-", explode("/", $aux));
+                $filename = ($aux == "-" ? "index" : $aux);
                 if ($_GET) {
-                        $filename .= "_" . md5(http_build_query($_GET));
+                        $filename .= "_" . sha1(http_build_query($_GET));
                 }
                 $path = self::$path . $filename . ".html";
                 fopen($path, "w+");
@@ -81,7 +83,7 @@ class Cache
                 if (is_dir($path)) {
                         self::deleteDir($path);
                 } else {
-                        unlink($path);
+                        @unlink($path);
                 }
         }
 
@@ -117,11 +119,11 @@ class Cache
                 $path = self::$path;
                 $dirs = explode(DIRECTORY_SEPARATOR, $path);
                 if (!is_dir($path)) {
-                        mkdir($path, 0777, true);
+                        mkdir($path, 0775, true);
                         $now = "";
                         foreach ($dirs as $dir) {
                                 $now .= $dir . DIRECTORY_SEPARATOR;
-                                chmod($now, 0777);
+                                chmod($now, 0775);
                         }
                 }
         }
@@ -132,16 +134,16 @@ class Cache
          */
         private static function checkCache()
         {
-                $filename = "index";
+                $aux = explode("?", $_SERVER['REQUEST_URI'])[0];
+                $aux = implode("-", explode("/", $aux));
+                $filename = ($aux == "-" ? "index" : $aux);
                 if ($_GET) {
-                        $filename .= "_" . md5(http_build_query($_GET));
+                        $filename .= "_" . sha1(http_build_query($_GET));
                 }
                 $fullPath = self::$path . $filename . ".html";
                 if (file_exists($fullPath)) {
                         $fileTime = filemtime($fullPath);
-                        if ($fileTime + self::$cacheLife > time()) {
-                                //$contents = file_get_contents($fullPath);
-                                //echo $contents;
+                        if (time() - $fileTime < self::$cacheLife) {
                                 include($fullPath);
                                 exit();
                         } else {
@@ -155,7 +157,7 @@ class Cache
                         if (is_dir($current)) {
                                 $fileTime = stat($current);
                                 if ($fileTime) {
-                                        if ($fileTime['mtime'] + self::$cacheLife < time()) {
+                                        if (time() - $fileTime['mtime'] < self::$cacheLife) {
                                                 self::deleteDir($current);
                                         }
                                 }
